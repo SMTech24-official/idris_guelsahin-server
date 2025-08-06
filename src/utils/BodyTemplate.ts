@@ -1,5 +1,6 @@
 // Update your TemplateConfig interface
 export interface TemplateConfig {
+  title?: string;
   message?: string;
   version?: string;
   repoUrl?: string;
@@ -13,6 +14,7 @@ export interface TemplateConfig {
 // Updated AppBodyTemplate function
 export const AppBodyTemplate = (config: TemplateConfig = {}) => {
   const {
+    title = "API Service",
     message = "API Service is Running...",
     version = "1.0.0",
     repoUrl = "https://github.com/yourusername/note-organizer",
@@ -47,7 +49,7 @@ export const AppBodyTemplate = (config: TemplateConfig = {}) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Note Organizer API - ${status}</title>
+        <title>${title} API - ${status}</title>
         <style>
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -138,7 +140,7 @@ export const AppBodyTemplate = (config: TemplateConfig = {}) => {
       </head>
       <body>
         <div class="container">
-          <div class="logo">📝 Note Organizer</div>
+          <div class="logo">📝 ${title}</div>
           <h1>${message}</h1>
           
           <div class="status">
@@ -147,7 +149,7 @@ export const AppBodyTemplate = (config: TemplateConfig = {}) => {
           
           ${
             status === "Active"
-              ? "<p>A MERN stack application for managing and categorizing notes with TypeScript</p>"
+              ? "<p>A Full stack application for managing and categorizing notes with TypeScript</p>"
               : additionalContent
           }
           

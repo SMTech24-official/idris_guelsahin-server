@@ -12,8 +12,8 @@ model User {
   firstName      String
   lastName       String
   email          String  @unique
-  mobileNo       String
-  currentAddress String
+  mobileNumber       String?
+  currentAddress String?
   homeAddress    String?
 
   role         UserRole

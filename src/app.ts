@@ -37,12 +37,12 @@ app.use(express.static("public"));
 app.get("/", (req: Request, res: Response) => {
   res.send(
     AppBodyTemplate({
-      message: "Welcome to Note Organizer Project API 🚀",
+      message: "Welcome to Nexbiz Market Project API 🚀",
       version: "1.0.1",
       status: "Active",
-      repoUrl: "https://github.com/yourusername/note-organizer",
-      docsUrl: "https://github.com/yourusername/note-organizer#readme",
-      showButtons: false,
+      repoUrl: "https://github.com/kj-rahil",
+      docsUrl: "https://github.com/kj-rahil",
+      showButtons: true,
     })
   );
 });
