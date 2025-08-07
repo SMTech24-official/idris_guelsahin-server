@@ -19,10 +19,21 @@ const UserLoginValidationSchema = z.object({
   }),
 });
 
+const IdentificationSchema = z.object({
+  nid: z.string(),
+  passport: z.string(),
+  tradeLicense: z.string(),
+});
+
 const userUpdateSchema = z.object({
   body: z.object({
-    fullName: z.string().optional(),
-    userName: z.string().optional(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z.string().optional(),
+    mobileNumber: z.string().optional(),
+    currentAddress: z.string().optional(),
+    homeAddress: z.string().optional(),
+    Identification: IdentificationSchema.optional(),
   }),
 });
 

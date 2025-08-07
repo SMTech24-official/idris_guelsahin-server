@@ -16,6 +16,47 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const requestVerification = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const {Identification, ...rest} = req.body;
+
+  if (req.files) {
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    // if (files.profileImage && files.profileImage[0]) {
+    //   updateData.profileImage = `${config.backend_image_url}/${files.profileImage[0].filename}`;
+    // }
+  }
+
+
+  const result = await UserService.requestVerification(userId, rest, Identification);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User updated successfully!",
+    data: result,
+  });
+});
+
+
+const updateVerification = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id;
+  const { verificationStatus } = req.body;
+
+  const result = await UserService.updateVerification(
+    userId,
+    verificationStatus
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User updated successfully!",
+    data: result,
+  });
+});
+
 const getUserById = catchAsync(async (req: Request, res: Response) => {
   const userId = req.params.id;
   const result = await UserService.getUserById(userId);

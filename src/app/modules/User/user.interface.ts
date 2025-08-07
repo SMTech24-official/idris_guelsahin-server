@@ -5,7 +5,12 @@ export interface TUser {
   lastName?: string;
   userName:string
   email: string;
-  password: string;
-  
+  password: string;  
+};
+
+
+export interface IIdentification {
+  nid: string;
+  passport: string;
+  tradeLicense: string
 }
-;

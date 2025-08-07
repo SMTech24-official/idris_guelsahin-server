@@ -18,12 +18,25 @@ router.post(
   UserController.createUser
 );
 
-// get single user
-router.get(
-  "/:id",
+// register user
+router.post(
+  "/request",
   auth(),
-  UserController.getUserById
+  fileUploader.upload.fields([
+    { name: "nid", maxCount: 1 },
+    { name: "tradeLicense", maxCount: 1 },
+    { name: "passport", maxCount: 1 },
+  ]),
+  parseBodyData,
+  validateRequest(UserValidation.userUpdateSchema),
+  UserController.createUser
 );
+
+// register user
+router.post("/accept/:id", auth(), UserController.createUser);
+
+// get single user
+router.get("/:id", auth(), UserController.getUserById);
 
 // update user
 router.put(

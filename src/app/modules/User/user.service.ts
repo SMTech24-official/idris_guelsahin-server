@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import ApiError from "../../../errors/ApiErrors";
 import prisma from "../../../shared/prisma";
-import { User, UserRole, UserStatus } from "@prisma/client";
-import { TUser } from "./user.interface";
+import { User, UserRole, UserStatus, verificationStatus } from "@prisma/client";
+import { IIdentification, TUser } from "./user.interface";
 import httpStatus from "http-status";
 import emailSender from "../../../helpars/emailSender";
 import QueryBuilder from "../../../helpars/queryBuilder";
@@ -80,6 +80,27 @@ const createUser = async (payload: User) => {
   });
 
   return { message: "OTP sent your email successfully" };
+};
+
+
+const requestVerification = async (userId: string, payload: TUser, Identification:IIdentification) => {
+  
+  const userData = await prisma.user.findUnique({
+    where: {
+      email: payload.email,
+    },
+  });
+}
+
+const updateVerification = async (
+  userId: string,
+  verificationStatus: verificationStatus
+) => {
+  const userData = await prisma.user.findUnique({
+    where: {
+     id: userId
+    },
+  });
 };
 
 const getUserById = async (id: string) => {
@@ -206,6 +227,8 @@ const getAllUsers = async (queryParams: Record<string, any>) => {
 
 export const UserService = {
   createUser,
+  requestVerification,
+  updateVerification,
   getUserById,
   updateUser,
   deleteUser,

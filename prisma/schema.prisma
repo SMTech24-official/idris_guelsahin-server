@@ -27,9 +27,10 @@ model User {
   isOnline Boolean   @default(false)
   lastSeen DateTime?
 
-  otp           Int?
-  otpExpiry     DateTime?
-  emailVerified Boolean   @default(false)
+  otp              Int?
+  otpExpiry        DateTime?
+  emailVerified    Boolean          @default(false)
+  verificationStatus verificationStatus @default(PENDING)
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -37,6 +38,14 @@ model User {
   chatUser1    ChatRoom[]     @relation(name: "ChatUser1")
   chatUser2    ChatRoom[]     @relation(name: "ChatUser2")
   message      Message[]
+}
+
+model Identification {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String @unique
+  nid          String
+  tradeLicense String
+  passport     String
 }
 
 model Category {
@@ -53,16 +62,18 @@ model Category {
 }
 
 model Product {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
   categoryId     String
+  name           String
+  slug           String
   location       String
-  purchasePrice  String
+  purchasePrice  Float
   companyAssests String
   description    String
-  website        String
-  facebook       String
-  instragram     String
+  websiteUrl     String
+  facebookUrl    String
+  instragramUrl  String
+  image          String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -123,4 +134,11 @@ enum NotificationType {
   ORDER
   PAYMENT
   BOOKING
+}
+
+enum verificationStatus {
+  PENDING
+  REQUESTED
+  ACCEPTED
+  REJECTED
 }
