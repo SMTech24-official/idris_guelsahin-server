@@ -4,6 +4,7 @@ import catchAsync from "../../../shared/catchAsync";
 import { UserService } from "./user.service";
 import sendResponse from "../../../shared/sendResponse";
 import { User } from "@prisma/client";
+import config from "../../../config";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.createUser(req.body);
@@ -29,23 +30,19 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
 
 const updateUser = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
-  const updateData:User = req.body;
-  console.log(req.files, "req.files");
-  console.log(req.file, "req.t");
+  const updateData: User = req.body;
 
   if (req.files) {
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-    if (files.profilePicture && files.profilePicture[0]) {
-      updateData.profileImage = `${req.protocol}://${req.get(
-        "host"
-      )}/uploads/${files.profilePicture[0].filename}`;
+    if (files.profileImage && files.profileImage[0]) {
+      updateData.profileImage = `${config.backend_image_url}/${
+        files.profileImage[0].filename
+      }`;
     }
 
-    if (files.coverPicture && files.coverPicture[0]) {
-      updateData.coverImage = `${req.protocol}://${req.get(
-        "host"
-      )}/uploads/${files.coverPicture[0].filename}`;
+    if (files.coverImage && files.coverImage[0]) {
+      updateData.coverImage = `${config.backend_image_url}/${files.coverImage[0].filename}`;
     }
   }
 
