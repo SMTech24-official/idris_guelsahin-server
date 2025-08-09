@@ -58,6 +58,10 @@ router.put(
 router.delete("/:id", auth(UserRole.SUPER_ADMIN), UserController.deleteUser);
 
 // get all user
-router.get("/", auth(), UserController.getAllUsers);
+router.get(
+  "/",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  UserController.getAllUsers
+);
 
 export const UserRoutes = router;

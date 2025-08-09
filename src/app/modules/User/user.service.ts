@@ -34,7 +34,7 @@ const createUser = async (payload: User) => {
   }
 
   //otp generate and send also email
-  const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
+  const randomOtp = Math.floor(100000 + Math.random() * 900000).toString();
   const otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
 
   const html = `<!DOCTYPE html>
@@ -95,11 +95,29 @@ const requestVerification = async (
   if (!userData) {
     throw new ApiError(httpStatus.NOT_FOUND, "This user not found");
   }
+
   const existIdentification = await prisma.identification.findUnique({
     where: {
       userId: userId,
     },
+    include: {
+      user: {
+        select: {
+          role: true,
+        },
+      },
+    },
   });
+
+  if (
+    existIdentification &&
+    existIdentification.user.role === UserRole.SELLER
+  ) {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      "You're Already Seller and Seller can't request verification"
+    );
+  }
 
   const result = await prisma.$transaction(async (tx) => {
     await tx.user.update({
@@ -182,6 +200,7 @@ const getUserById = async (id: string) => {
       userStatus: true,
       createdAt: true,
       updatedAt: true,
+      identification: true,
     },
   });
 
@@ -268,17 +287,18 @@ const getAllUsers = async (queryParams: Record<string, any>) => {
   const queryBuilder = new QueryBuilder(prisma.user, filteredQueryParams);
 
   const users = await queryBuilder
-    .search(["fullName", "userName", "email"])
+    .search(["fullName", "email", "currentAddress", "homeAddress"])
     .filter()
     .sort()
     .paginate()
     .fields()
-    .include({})
+    .include({ identification: true })
     .execute();
+  console.log(users);
 
   // Remove the password field from each user
   const usersWithoutPassword = users.map((user: User) => {
-    const { password, ...userWithoutPassword } = user;
+    const { password, otp, otpExpiry, ...userWithoutPassword } = user;
     return userWithoutPassword;
   });
 
