@@ -20,8 +20,9 @@ model User {
   profileImage String?
   coverImage   String?
 
-  userStatus UserStatus @default(ACTIVE)
-  isDeleted  Boolean    @default(false)
+  stripeCustomerId String?
+  userStatus       UserStatus @default(ACTIVE)
+  isDeleted        Boolean    @default(false)
 
   isOnline Boolean   @default(false)
   lastSeen DateTime?
@@ -38,11 +39,12 @@ model User {
   chatUser2      ChatRoom[]      @relation(name: "ChatUser2")
   message        Message[]
   identification Identification?
+  Subscription   Subscription[]
 }
 
 model Identification {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String @db.ObjectId  @unique
+  userId String @unique @db.ObjectId
 
   nid          String
   tradeLicense String
@@ -57,31 +59,63 @@ model Identification {
 model Category {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  name        String  @unique
-  slug        String  @unique
+  name        String   @unique
+  slug        String   @unique
   description String?
-  isActive    Boolean @default(true)
+  details     String[]
+  image       String?
+  isActive    Boolean  @default(true)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Product {
-  id             String @id @default(auto()) @map("_id") @db.ObjectId
-  categoryId     String
-  name           String
-  slug           String
-  location       String
-  purchasePrice  Float
-  companyAssests String
-  description    String
-  websiteUrl     String
-  facebookUrl    String
-  instragramUrl  String
-  image          String
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  categoryId    String        @db.ObjectId
+  name          String
+  slug          String        @unique
+  location      String
+  details       Json
+  description   String
+  websiteUrl    String
+  facebookUrl   String
+  instragramUrl String
+  image         String
+  status        ProductStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Plan {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  price         Int // cents
+  currency      String         @default("usd")
+  interval      String // "month" | "year"
+  colorTheme    String
+  features      String[]       @default([])
+  stripePriceId String?
+  createdAt     DateTime       @default(now())
+  Subscription  Subscription[]
+}
+
+model Subscription {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+
+  planId               String    @db.ObjectId
+  stripeSubscriptionId String?
+  status               String
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  plan Plan @relation(fields: [planId], references: [id])
 }
 
 model Notification {
@@ -144,6 +178,12 @@ enum NotificationType {
 enum VerificationStatus {
   PENDING
   REQUESTED
+  ACCEPTED
+  REJECTED
+}
+
+enum ProductStatus {
+  PENDING
   ACCEPTED
   REJECTED
 }

@@ -19,22 +19,20 @@ const getMessageHistory = async (
       user1: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
+          fullName: true,
           email: true,
           profileImage: true,
         },
       },
       user2: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              email: true,
-              profileImage: true,
-            },
-          },
-    
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          profileImage: true,
+        },
+      },
+
       messages: true,
     },
   });

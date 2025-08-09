@@ -5,8 +5,9 @@ const ProductSchema = z.object({
     categoryId: z.string(),
     name: z.string(),
     location: z.string(),
-    purchasePrice: z.number(),
-    companyAssests: z.string(),
+    details: z.object({
+      purchasePrice: z.number().optional(),
+    }),
     description: z.string(),
     websiteUrl: z.string(),
     instragramUrl: z.string(),
@@ -29,7 +30,6 @@ const UpdateProductSchema = z.object({
     image: z.string().optional(),
   }),
 });
-
 
 export const ProductValidation = {
   ProductSchema,

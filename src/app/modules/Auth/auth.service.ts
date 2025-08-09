@@ -41,8 +41,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
     const accessToken = jwtHelpers.generateToken(
       {
         id: userData.id,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+        fullName: userData.fullName,
         email: userData.email,
         role: userData.role,
       },
@@ -53,8 +52,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
     const refreshToken = jwtHelpers.generateToken(
       {
         id: userData.id,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
+        fullName: userData.fullName,
         email: userData.email,
         role: userData.role,
       },
@@ -155,8 +153,7 @@ const enterOtp = async (payload: { email: string; otp: string }) => {
   const accessToken = jwtHelpers.generateToken(
     {
       id: userData.id,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
+      fullName: userData.fullName,
       email: userData.email,
       role: userData.role,
     },
@@ -190,8 +187,7 @@ const getMyProfile = async (userId: string) => {
     },
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
+      fullName: true,
       email: true,
       mobileNumber: true,
       currentAddress: true,

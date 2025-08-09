@@ -7,6 +7,7 @@ import { UserRole } from "@prisma/client";
 import generateUniqueSlug from "../../../utils/slugify";
 
 const createProduct = async (data: TProduct, userId: string) => {
+  console.log(data, "dd");
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (user && user.role !== UserRole.SELLER) {
     throw new ApiError(
@@ -14,13 +15,16 @@ const createProduct = async (data: TProduct, userId: string) => {
       `Only seller can create a product`
     );
   }
-    const existingCategory = await prisma.category.findUnique({
-        where: { id: data.categoryId },
-    })
-    if (!existingCategory) {
-        throw new ApiError(httpStatus.NOT_FOUND, "Category not found..!!");
-    }
-    data.slug = await generateUniqueSlug(data.name, prisma, "product");
+  const existingCategory = await prisma.category.findUnique({
+    where: { id: data.categoryId, isActive: true },
+  });
+
+  if (!existingCategory) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Category not found..!!");
+  }
+  data.slug = await generateUniqueSlug(data.name, prisma, "product");
+
+  console.log(data.slug, "dd");
   //if you wanna add logic here
   const result = await prisma.product.create({ data });
   return result;
@@ -34,6 +38,15 @@ const getAllProducts = async (query: Record<string, any>) => {
     .sort()
     .paginate()
     .fields()
+    .include({
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    })
     .execute();
 
   const meta = await queryBuilder.countTotal();
@@ -41,7 +54,18 @@ const getAllProducts = async (query: Record<string, any>) => {
 };
 
 const getSingleProduct = async (id: string) => {
-  const result = await prisma.product.findUnique({ where: { id } });
+  const result = await prisma.product.findUnique({
+    where: { id },
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+  });
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Product not found..!!");
   }
@@ -52,6 +76,9 @@ const updateProduct = async (id: string, data: any) => {
   const existingProduct = await prisma.product.findUnique({ where: { id } });
   if (!existingProduct) {
     throw new ApiError(httpStatus.NOT_FOUND, "Product not found..!!");
+  }
+  if(existingProduct.name !== data.name) {
+    data.slug = await generateUniqueSlug(data.name, prisma, "product");
   }
   const result = await prisma.product.update({ where: { id }, data });
   return result;

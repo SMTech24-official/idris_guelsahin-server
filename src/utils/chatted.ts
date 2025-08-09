@@ -96,8 +96,7 @@ async function handleJoinChat(userId: string, rawData: any, ws: WebSocket) {
           sender: {
             select: {
               id: true,
-              firstName: true,
-              lastName: true,
+              fullName:true,
               email: true,
               profileImage: true,
             },
@@ -125,8 +124,7 @@ async function handleJoinChat(userId: string, rawData: any, ws: WebSocket) {
             sender: {
               select: {
                 id: true,
-                firstName: true,
-                lastName: true,
+                fullName:true,
                 email: true,
                 profileImage: true,
               },
@@ -175,8 +173,7 @@ async function handleAllMessages(userId: string, data: any, ws: WebSocket) {
         sender: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            fullName:true,
             email: true,
             profileImage: true,
           },
@@ -206,8 +203,7 @@ async function handleSendMessage(userId: string, rawData: any) {
         sender: {
           select: {
             id: true,
-            firstName: true,
-            lastName: true,
+            fullName:true,
             email: true,
             profileImage: true,
           },
@@ -320,8 +316,7 @@ export async function getChatMembersWithMetadata(userId: string) {
       user1: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
+          fullName:true,
           email: true,
           profileImage: true,
           isOnline: true,
@@ -331,8 +326,7 @@ export async function getChatMembersWithMetadata(userId: string) {
       user2: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
+          fullName: true,
           email: true,
           profileImage: true,
           isOnline: true,

@@ -4,8 +4,7 @@ export type TProduct = {
   name: string;
   slug: string;
   location: string;
-  purchasePrice: number;
-  companyAssests: string;
+  details: {};
   description: string;
   websiteUrl: string;
   instragramUrl: string;

@@ -3,8 +3,12 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { categoryService } from "./Category.service";
+import config from "../../../config";
 
 const createCategory = catchAsync(async (req: Request, res: Response) => {
+      if (req.file) {
+        req.body.image = `${config.backend_image_url}/${req.file.filename}`;
+      }
     const result = await categoryService.createCategory(req.body);
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
@@ -26,7 +30,7 @@ const getAllCategorys = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
-    const result = await categoryService.getSingleCategory(req.params.id);
+    const result = await categoryService.getSingleCategory(req.params.slug);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -36,6 +40,9 @@ const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
+      if (req.file) {
+    req.body.image = `${config.backend_image_url}/${req.file.filename}`;
+  }
     const result = await categoryService.updateCategory(req.params.id, req.body);
     sendResponse(res, {
         statusCode: httpStatus.OK,

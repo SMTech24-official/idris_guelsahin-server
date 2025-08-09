@@ -4,13 +4,17 @@ import { UserRole } from "@prisma/client";
 import auth from "../../middlewares/auth";
 import validateRequest from "../../middlewares/validateRequest";
 import { CategoryValidation } from "./Category.validation";
+import { fileUploader } from "../../../helpars/fileUploader";
+import { parseBodyData } from "../../middlewares/parseBodyData";
 
 const router = Router();
 
 // create category
 router.post(
   "/create",
-    auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  fileUploader.upload.single("image"),
+  parseBodyData,
   validateRequest(CategoryValidation.CategorySchema),
   categoryController.createCategory
 );
@@ -25,6 +29,9 @@ router.get("/:slug", auth(), categoryController.getSingleCategory);
 router.put(
   "/:id",
   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  fileUploader.upload.single("image"),
+  parseBodyData,
+  validateRequest(CategoryValidation.UpdateCategorySchema),
   categoryController.updateCategory
 );
 

@@ -25,7 +25,13 @@ router.get("/", auth(), productController.getAllProducts);
 router.get("/:id", auth(), productController.getSingleProduct);
 
 // update product
-router.put("/:id", auth(), productController.updateProduct);
+router.put(
+  "/:id",
+  auth(),
+  fileUploader.upload.single("image"),
+  parseBodyData,
+  productController.updateProduct
+);
 
 // delete product
 router.delete("/:id", auth(), productController.deleteProduct);

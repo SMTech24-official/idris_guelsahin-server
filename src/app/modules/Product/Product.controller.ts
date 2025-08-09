@@ -4,6 +4,8 @@ import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { productService } from "./Product.service";
 import config from "../../../config";
+import prisma from "../../../shared/prisma";
+import ApiError from "../../../errors/ApiErrors";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
@@ -19,11 +21,23 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
-
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-  const results = await productService.getAllProducts(req.query);
+  const { categorySlug, ...rest } = req.query;
+
+  let categoryId = undefined;
+  if (categorySlug) {
+    const category = await prisma.category.findUnique({
+      where: {
+        slug: categorySlug as string,
+      },
+    });
+    if (!category) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Category not found..!!");
+    }
+    categoryId = category.id;
+  }
+
+  const results = await productService.getAllProducts({ ...rest, categoryId });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -44,6 +58,9 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
+  if (req.file) {
+    req.body.image = `${config.backend_image_url}/${req.file.filename}`;
+  }
   const result = await productService.updateProduct(req.params.id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
