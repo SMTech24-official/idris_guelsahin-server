@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import ApiError from "../../../errors/ApiErrors";
 import prisma from "../../../shared/prisma";
-import { User, UserRole, UserStatus, verificationStatus } from "@prisma/client";
+import { User, UserRole, UserStatus, VerificationStatus } from "@prisma/client";
 import { IIdentification, TUser } from "./user.interface";
 import httpStatus from "http-status";
 import emailSender from "../../../helpars/emailSender";
@@ -32,7 +32,6 @@ const createUser = async (payload: User) => {
   if (!user) {
     throw new ApiError(httpStatus.CONFLICT, "User not created!");
   }
-
 
   //otp generate and send also email
   const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
@@ -82,25 +81,91 @@ const createUser = async (payload: User) => {
   return { message: "OTP sent your email successfully" };
 };
 
-
-const requestVerification = async (userId: string, payload: TUser, Identification:IIdentification) => {
-  
-  const userData = await prisma.user.findUnique({
-    where: {
-      email: payload.email,
-    },
-  });
-}
-
-const updateVerification = async (
+const requestVerification = async (
   userId: string,
-  verificationStatus: verificationStatus
+  payload: TUser,
+  identification: IIdentification
 ) => {
   const userData = await prisma.user.findUnique({
     where: {
-     id: userId
+      id: userId,
     },
   });
+
+  if (!userData) {
+    throw new ApiError(httpStatus.NOT_FOUND, "This user not found");
+  }
+  const existIdentification = await prisma.identification.findUnique({
+    where: {
+      userId: userId,
+    },
+  });
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: userId },
+      data: {
+        fullName: payload.fullName,
+        mobileNumber: payload.mobileNumber,
+        currentAddress: payload.currentAddress,
+        homeAddress: payload.homeAddress,
+        verificationStatus: VerificationStatus.REQUESTED,
+      },
+    });
+
+    if (existIdentification) {
+      await tx.identification.update({
+        where: { userId },
+        data: identification,
+      });
+    } else {
+      await tx.identification.create({
+        data: { ...identification, userId },
+      });
+    }
+  });
+
+  return result;
+};
+
+const updateVerification = async (
+  userId: string,
+  verificationStatus: VerificationStatus
+) => {
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!userData) {
+    throw new ApiError(httpStatus.NOT_FOUND, "This user not found");
+  }
+  if (userData.role === UserRole.SELLER) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "This user is already a seller");
+  }
+
+  if (userData.verificationStatus === VerificationStatus.ACCEPTED) {
+    const result = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        verificationStatus: verificationStatus,
+        role: UserRole.SELLER,
+      },
+    });
+  } else {
+    const result = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        verificationStatus: verificationStatus,
+      },
+    });
+  }
+  return null;
 };
 
 const getUserById = async (id: string) => {
@@ -108,8 +173,7 @@ const getUserById = async (id: string) => {
     where: { id },
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
+      fullName: true,
       email: true,
       role: true,
       profileImage: true,
@@ -141,8 +205,7 @@ const updateUser = async (id: string, payload: Partial<User>) => {
     data: payload,
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
+      fullName: true,
       email: true,
       mobileNumber: true,
       currentAddress: true,

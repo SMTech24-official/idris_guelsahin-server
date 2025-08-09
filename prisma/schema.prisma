@@ -9,8 +9,7 @@ datasource db {
 
 model User {
   id             String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName      String
-  lastName       String
+  fullName       String
   email          String  @unique
   mobileNumber   String?
   currentAddress String?
@@ -27,10 +26,10 @@ model User {
   isOnline Boolean   @default(false)
   lastSeen DateTime?
 
-  otp              Int?
-  otpExpiry        DateTime?
-  emailVerified    Boolean          @default(false)
-  verificationStatus verificationStatus @default(PENDING)
+  otp                Int?
+  otpExpiry          DateTime?
+  emailVerified      Boolean            @default(false)
+  verificationStatus VerificationStatus @default(PENDING)
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -41,11 +40,15 @@ model User {
 }
 
 model Identification {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  userId       String @unique
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @unique
+
   nid          String
   tradeLicense String
   passport     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
@@ -136,7 +139,7 @@ enum NotificationType {
   BOOKING
 }
 
-enum verificationStatus {
+enum VerificationStatus {
   PENDING
   REQUESTED
   ACCEPTED

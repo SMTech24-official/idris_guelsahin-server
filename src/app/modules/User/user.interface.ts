@@ -1,10 +1,11 @@
 
 
 export interface TUser {
-  firstName?: string;
-  lastName?: string;
-  userName:string
+  fullName:string
   email: string;
+  mobileNumber: string;
+  currentAddress: string;
+  homeAddress: string;
   password: string;  
 };
 

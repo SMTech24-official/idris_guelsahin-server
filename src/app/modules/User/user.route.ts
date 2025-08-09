@@ -29,11 +29,11 @@ router.post(
   ]),
   parseBodyData,
   validateRequest(UserValidation.userUpdateSchema),
-  UserController.createUser
+  UserController.requestVerification
 );
 
 // register user
-router.post("/accept/:id", auth(), UserController.createUser);
+router.post("/accept/:id", auth(UserRole.SUPER_ADMIN, UserRole.ADMIN), UserController.updateVerification);
 
 // get single user
 router.get("/:id", auth(), UserController.getUserById);

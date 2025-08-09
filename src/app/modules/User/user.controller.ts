@@ -16,25 +16,31 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
 const requestVerification = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
-  const {Identification, ...rest} = req.body;
-
+  const { identification = {}, ...rest } = req.body;
+  
   if (req.files) {
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    console.log(files, "files");
 
-    // if (files.profileImage && files.profileImage[0]) {
-    //   updateData.profileImage = `${config.backend_image_url}/${files.profileImage[0].filename}`;
-    // }
+    if (files.nid && files.nid[0]) {
+      identification.nid = `${config.backend_image_url}/${files.nid[0].filename}`;
+    }
+    if (files.tradeLicense && files.tradeLicense[0]) {
+      identification.tradeLicense = `${config.backend_image_url}/${files.tradeLicense[0].filename}`;
+    }
+    if (files.passport && files.passport[0]) {
+      identification.passport = `${config.backend_image_url}/${files.passport[0].filename}`;
+    }
   }
-
-
-  const result = await UserService.requestVerification(userId, rest, Identification);
+  const result = await UserService.requestVerification(userId, rest, identification);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "User updated successfully!",
+    message: "Seller Verification Requested successfully!",
     data: result,
   });
 });
@@ -52,7 +58,7 @@ const updateVerification = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "User updated successfully!",
+    message: ` Seller verification ${verificationStatus} successfully!`,
     data: result,
   });
 });
@@ -137,6 +143,8 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
 export const UserController = {
   createUser,
+  requestVerification,
+  updateVerification,
   getUserById,
   updateUser,
   deleteUser,
