@@ -26,7 +26,7 @@ router.get(
 // get single subscription by id
 router.get(
   "/:id",
-//   auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   subscriptionController.getSingleSubscription
 );
 

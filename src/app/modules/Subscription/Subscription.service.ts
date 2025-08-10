@@ -125,9 +125,8 @@ const getSingleSubscription = async (id: string) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Subscription not found..!!");
   }
-  const sub = await stripe.subscriptions.retrieve(result.stripeSubscriptionId!);
-  console.log(sub, "ee");
-  return { result, sub };
+ 
+  return result
 };
 
 const updateSubscription = async (id: string, data: any) => {
