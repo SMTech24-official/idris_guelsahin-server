@@ -157,13 +157,20 @@ const stripeWebhookHandler = async (event: Stripe.Event) => {
     switch (event.type) {
       case "invoice.payment_succeeded": {
         console.log('cal payment succeeded');
-        const invoice = event.data.object;
-        const stripeSubscriptionId = invoice.subscription as string;
-        console.log(invoice, "invoice");
-        // console.log(, 'invoice');
-        console.log(stripeSubscriptionId , "id");
+     const invoice = event.data.object as Stripe.Invoice & {
+       parent?: {
+         subscription_details?: {
+           subscription?: string;
+           metadata?: { userId?: string; planId?: string };
+         };
+       };
+     };
+
+        const stripeSubscriptionId = invoice.parent?.subscription_details?.subscription
+
+
         // Retrieve subscription to know current_period_end & status
-        const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId!);
         console.log(sub, 'ee');
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId },
