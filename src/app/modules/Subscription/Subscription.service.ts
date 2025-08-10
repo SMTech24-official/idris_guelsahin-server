@@ -154,6 +154,7 @@ const stripeWebhookHandler = async (event: Stripe.Event) => {
   try {
     switch (event.type) {
       case "invoice.payment_succeeded": {
+        console.log('cal payment succeeded');
         const invoice = event.data.object;
         const stripeSubscriptionId = invoice.subscription as string;
         // Retrieve subscription to know current_period_end & status
