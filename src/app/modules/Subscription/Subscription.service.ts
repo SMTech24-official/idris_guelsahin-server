@@ -125,9 +125,9 @@ const getSingleSubscription = async (id: string) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Subscription not found..!!");
   }
-        const sub = await stripe.subscriptions.retrieve(result.stripeSubscriptionId!);
-        console.log(sub, "ee");
-  return {result, sub};
+  const sub = await stripe.subscriptions.retrieve(result.stripeSubscriptionId!);
+  console.log(sub, "ee");
+  return { result, sub };
 };
 
 const updateSubscription = async (id: string, data: any) => {
@@ -156,22 +156,23 @@ const stripeWebhookHandler = async (event: Stripe.Event) => {
   try {
     switch (event.type) {
       case "invoice.payment_succeeded": {
-        console.log('cal payment succeeded');
-     const invoice = event.data.object as Stripe.Invoice & {
-       parent?: {
-         subscription_details?: {
-           subscription?: string;
-           metadata?: { userId?: string; planId?: string };
-         };
-       };
-     };
+        console.log("cal payment succeeded");
+        const invoice = event.data.object as Stripe.Invoice & {
+          parent?: {
+            subscription_details?: {
+              subscription?: string;
+              metadata?: { userId?: string; planId?: string };
+            };
+          };
+        };
 
-        const stripeSubscriptionId = invoice.parent?.subscription_details?.subscription
-
+        const stripeSubscriptionId =
+          invoice.parent?.subscription_details?.subscription;
+        console.log(stripeSubscriptionId, "stripeSubscriptionId");
 
         // Retrieve subscription to know current_period_end & status
         const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId!);
-        console.log(sub, 'ee');
+        console.log(sub, "ee");
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId },
           data: {
