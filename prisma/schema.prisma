@@ -94,12 +94,14 @@ model Product {
 model Plan {
   id            String         @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  price         Int // cents
+  price         Float // cents
   currency      String         @default("usd")
-  interval      String // "month" | "year"
+  duration      PlanDuration 
   colorTheme    String
+  description   String
   features      String[]       @default([])
   stripePriceId String?
+  stripeProductId String?
   createdAt     DateTime       @default(now())
   Subscription  Subscription[]
 }
@@ -186,4 +188,10 @@ enum ProductStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+enum PlanDuration {
+  WEEKLY
+  MONTHLY
+  YEARLY
 }
