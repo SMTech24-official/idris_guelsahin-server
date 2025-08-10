@@ -125,7 +125,9 @@ const getSingleSubscription = async (id: string) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Subscription not found..!!");
   }
-  return result;
+        const sub = await stripe.subscriptions.retrieve(result.stripeSubscriptionId!);
+        console.log(sub, "ee");
+  return {result, sub};
 };
 
 const updateSubscription = async (id: string, data: any) => {
@@ -157,6 +159,9 @@ const stripeWebhookHandler = async (event: Stripe.Event) => {
         console.log('cal payment succeeded');
         const invoice = event.data.object;
         const stripeSubscriptionId = invoice.subscription as string;
+        console.log(invoice, "invoice");
+        // console.log(, 'invoice');
+        console.log(stripeSubscriptionId , "id");
         // Retrieve subscription to know current_period_end & status
         const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
         console.log(sub, 'ee');

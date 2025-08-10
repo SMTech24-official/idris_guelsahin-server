@@ -76,7 +76,7 @@ const webhookHandler = async (req: Request, res: Response) => {
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Subscription deleted successfully",
+      message: " Webhook handler successfully",
       data: result,
     });
 };
