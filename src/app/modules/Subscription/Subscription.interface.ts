@@ -1,5 +1,4 @@
 export type TSubscription = {
-    id: string;
-    name: string;
-    email: string;
+    userId: string;
+    planId: string;
 }

@@ -4,8 +4,9 @@ import ApiError from "../../../errors/ApiErrors";
 import httpStatus from "http-status";
 import stripe from "../../../helpars/stripe";
 import Stripe from "stripe";
+import { TSubscription } from "./Subscription.interface";
 
-const createSubscription = async (data: any) => {
+const createSubscription = async (data: TSubscription) => {
 
  const { userId, planId } = data;
     if (!userId || !planId) {
@@ -43,7 +44,7 @@ const createSubscription = async (data: any) => {
  const subscription = await stripe.subscriptions.create({
    customer: stripeCustomerId,
    items: [{ price: plan.stripePriceId }],
-   payment_behavior: "default_incomplete", // important: creates an invoice + PaymentIntent
+   payment_behavior: "default_incomplete", 
    expand: ["latest_invoice.payment_intent"],
    metadata: { userId: user.id, planId: plan.id },
  });

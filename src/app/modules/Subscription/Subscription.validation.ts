@@ -2,7 +2,7 @@ import { z } from "zod";
 
  const SubscriptionSchema = z.object({
     body: z.object({
-        name: z.string(),
+        planId: z.string(),
     }),
 });
 

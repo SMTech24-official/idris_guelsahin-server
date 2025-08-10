@@ -6,7 +6,8 @@ import { subscriptionService } from "./Subscription.service";
 import stripe from "../../../helpars/stripe";
 
 const createSubscription = catchAsync(async (req: Request, res: Response) => {
-    const result = await subscriptionService.createSubscription(req.body);
+    const userId = req.user.id;
+    const result = await subscriptionService.createSubscription({...req.body, userId});
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
         success: true,

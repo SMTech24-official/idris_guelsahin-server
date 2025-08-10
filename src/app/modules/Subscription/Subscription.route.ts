@@ -1,22 +1,44 @@
 import { Router } from "express";
 import { subscriptionController } from "./Subscription.controller";
+import auth from "../../middlewares/auth";
+import { UserRole } from "@prisma/client";
+import validateRequest from "../../middlewares/validateRequest";
+import { SubscriptionValidation } from "./Subscription.validation";
 
 const router = Router();
 
 // create subscription
-router.post("/create", subscriptionController.createSubscription);
+router.post(
+  "/create",
+  auth(),
+  validateRequest(SubscriptionValidation.SubscriptionSchema),
+  subscriptionController.createSubscription
+);
 
 // get all subscription
-router.get("/", subscriptionController.getAllSubscriptions);
+router.get(
+  "/",
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+
+  subscriptionController.getAllSubscriptions
+);
 
 // get single subscription by id
-router.get("/:id", subscriptionController.getSingleSubscription);
+router.get(
+  "/:id",
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  subscriptionController.getSingleSubscription
+);
 
 // update subscription
-router.put("/:id", subscriptionController.updateSubscription);
+router.put("/:id", auth(), subscriptionController.updateSubscription);
 
 // delete subscription
-router.delete("/:id", subscriptionController.deleteSubscription);
+router.delete(
+  "/:id",
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  subscriptionController.deleteSubscription
+);
 
 // webhook
 router.post("/webhook", subscriptionController.webhookHandler);
