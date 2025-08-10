@@ -158,6 +158,7 @@ const stripeWebhookHandler = async (event: Stripe.Event) => {
         const stripeSubscriptionId = invoice.subscription as string;
         // Retrieve subscription to know current_period_end & status
         const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        console.log(sub, 'ee');
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId },
           data: {

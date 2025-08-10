@@ -149,7 +149,7 @@ export const AppBodyTemplate = (config: TemplateConfig = {}) => {
           
           ${
             status === "Active"
-              ? "<p>A Full stack application for managing and categorizing notes with TypeScript</p>"
+              ? "<p>A Full stack application for the International Business Marketplace</p>"
               : additionalContent
           }
           
