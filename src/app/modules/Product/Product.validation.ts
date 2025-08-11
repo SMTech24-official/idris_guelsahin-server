@@ -1,3 +1,4 @@
+import { ProductStatus } from "@prisma/client";
 import { z } from "zod";
 
 const ProductSchema = z.object({
@@ -31,7 +32,16 @@ const UpdateProductSchema = z.object({
   }),
 });
 
+
+const UpdateProductStatusSchema = z.object({
+  body: z.object({
+    status: z.nativeEnum(ProductStatus),
+  }),
+})
+
+
 export const ProductValidation = {
   ProductSchema,
   UpdateProductSchema,
+  UpdateProductStatusSchema
 };

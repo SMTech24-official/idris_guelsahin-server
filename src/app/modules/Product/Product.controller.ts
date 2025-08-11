@@ -57,6 +57,19 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
+  const result = await productService.updateProductStatus(
+    req.params.id,
+    req.body
+  );
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `Product ${req.body.status} successfully`,
+    data: result,
+  });
+});
+
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   if (req.file) {
     req.body.image = `${config.backend_image_url}/${req.file.filename}`;
@@ -85,5 +98,6 @@ export const productController = {
   getAllProducts,
   getSingleProduct,
   updateProduct,
+  updateProductStatus,
   deleteProduct,
 };

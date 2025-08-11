@@ -3,7 +3,7 @@ import QueryBuilder from "../../../helpars/queryBuilder";
 import ApiError from "../../../errors/ApiErrors";
 import httpStatus from "http-status";
 import { TProduct } from "./Product.interface";
-import { UserRole } from "@prisma/client";
+import { ProductStatus, UserRole } from "@prisma/client";
 import generateUniqueSlug from "../../../utils/slugify";
 
 const createProduct = async (data: TProduct, userId: string) => {
@@ -77,10 +77,27 @@ const updateProduct = async (id: string, data: any) => {
   if (!existingProduct) {
     throw new ApiError(httpStatus.NOT_FOUND, "Product not found..!!");
   }
-  if(existingProduct.name !== data.name) {
+  if (existingProduct.name !== data.name) {
     data.slug = await generateUniqueSlug(data.name, prisma, "product");
   }
   const result = await prisma.product.update({ where: { id }, data });
+  return result;
+};
+
+const updateProductStatus = async (
+  id: string,
+  data: { status: ProductStatus }
+) => {
+  const existingProduct = await prisma.product.findUnique({ where: { id } });
+  if (!existingProduct) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found..!!");
+  }
+
+  const result = await prisma.product.update({
+    where: { id },
+    data: { status: data.status },
+  });
+
   return result;
 };
 
@@ -98,5 +115,6 @@ export const productService = {
   getAllProducts,
   getSingleProduct,
   updateProduct,
+  updateProductStatus,
   deleteProduct,
 };
