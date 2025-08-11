@@ -9,7 +9,7 @@ const getOverview = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "All Metricss Overview retrieved successfully",
+    message: "Overview retrieved successfully",
     data: result,
   });
 });
@@ -19,7 +19,7 @@ const getTotoalRevenue = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "New Clients retrieved successfully",
+    message: "Year wise revenue retrieved successfully",
     data: result,
   });
 });
@@ -32,7 +32,7 @@ const sellerVerificationRequest = catchAsync(async (req: Request, res: Response)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Monthly Revenue retrieved successfully",
+    message: "Seller Verification retrieved successfully",
     data: result,
   });
 });
@@ -50,7 +50,7 @@ const recentSubscriberList = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Weekly Booking Data retrieved successfully",
+    message: "Recent Subscriber Listretrieved successfully",
     data: result,
   });
 });

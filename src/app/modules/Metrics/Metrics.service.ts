@@ -1,3 +1,4 @@
+import { UserRole, VerificationStatus } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 
 const getOverview = async () => {
@@ -94,8 +95,8 @@ const sellerVerificationRequested = async (year: number) => {
 
   const sellerRequests = await prisma.user.findMany({
     where: {
-      verificationStatus: "PENDING",
-      role: "SELLER",
+      verificationStatus: VerificationStatus.REQUESTED,
+      role: UserRole.USER,
       createdAt: {
         gte: startDate,
         lte: endDate,
@@ -114,8 +115,8 @@ const sellerVerificationRequested = async (year: number) => {
 
   const count = await prisma.user.count({
     where: {
-      verificationStatus: "PENDING",
-      role: "SELLER",
+      verificationStatus: VerificationStatus.REQUESTED,
+      role: UserRole.USER,
       createdAt: {
         gte: startDate,
         lte: endDate,
