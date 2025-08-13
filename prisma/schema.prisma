@@ -40,6 +40,7 @@ model User {
   message        Message[]
   identification Identification?
   Subscription   Subscription[]
+  Product        Product[]
 }
 
 model Identification {
@@ -73,6 +74,7 @@ model Category {
 
 model Product {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String        @db.ObjectId
   categoryId    String        @db.ObjectId
   name          String
   slug          String        @unique
@@ -89,21 +91,22 @@ model Product {
   updatedAt DateTime @updatedAt
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Plan {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  price         Float // cents
-  currency      String         @default("usd")
-  duration      PlanDuration 
-  colorTheme    String
-  description   String
-  features      String[]       @default([])
-  stripePriceId String?
+  id              String         @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  price           Float // cents
+  currency        String         @default("usd")
+  duration        PlanDuration
+  colorTheme      String
+  description     String
+  features        String[]       @default([])
+  stripePriceId   String?
   stripeProductId String?
-  createdAt     DateTime       @default(now())
-  Subscription  Subscription[]
+  createdAt       DateTime       @default(now())
+  Subscription    Subscription[]
 }
 
 model Subscription {

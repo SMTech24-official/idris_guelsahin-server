@@ -15,6 +15,14 @@ router.post(
   subscriptionController.createSubscription
 );
 
+// get my subscription
+router.get(
+  "/my-subscription",
+  auth(),
+  subscriptionController.getMySubscriptions
+);
+
+
 // get all subscription
 router.get(
   "/",

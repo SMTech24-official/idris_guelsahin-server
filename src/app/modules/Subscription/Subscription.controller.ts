@@ -16,6 +16,16 @@ const createSubscription = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const getMySubscriptions = catchAsync(async (req: Request, res: Response) => {
+    const result = await subscriptionService.getMySubscriptions(req.user.id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Your Subscriptions retrieved successfully",
+        data: result,
+    });
+});
+
 const getAllSubscriptions = catchAsync(async (req: Request, res: Response) => {
     const results = await subscriptionService.getAllSubscriptions(req.query);
     sendResponse(res, {
@@ -84,6 +94,7 @@ const webhookHandler = async (req: Request, res: Response) => {
 
 export const subscriptionController = {
     createSubscription,
+    getMySubscriptions,
     getAllSubscriptions,
     getSingleSubscription,
     updateSubscription,

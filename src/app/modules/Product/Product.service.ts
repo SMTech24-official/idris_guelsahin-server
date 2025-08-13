@@ -7,7 +7,8 @@ import { ProductStatus, UserRole } from "@prisma/client";
 import generateUniqueSlug from "../../../utils/slugify";
 
 const createProduct = async (data: TProduct, userId: string) => {
-  console.log(data, "dd");
+
+
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (user && user.role !== UserRole.SELLER) {
     throw new ApiError(
@@ -23,8 +24,9 @@ const createProduct = async (data: TProduct, userId: string) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Category not found..!!");
   }
   data.slug = await generateUniqueSlug(data.name, prisma, "product");
+  data.userId = userId;
 
-  console.log(data.slug, "dd");
+  
   //if you wanna add logic here
   const result = await prisma.product.create({ data });
   return result;

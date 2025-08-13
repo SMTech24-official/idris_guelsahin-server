@@ -1,5 +1,6 @@
 export type TProduct = {
   readonly id: string;
+  userId: string;
   categoryId: string;
   name: string;
   slug: string;

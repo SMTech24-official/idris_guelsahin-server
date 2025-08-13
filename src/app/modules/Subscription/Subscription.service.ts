@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import stripe from "../../../helpars/stripe";
 import Stripe from "stripe";
 import { TSubscription } from "./Subscription.interface";
+import { SubscriptionService } from "./subscription.utils";
 
 const createSubscription = async (data: TSubscription) => {
   const { userId, planId } = data;
@@ -98,6 +99,27 @@ const getAllSubscriptions = async (query: Record<string, any>) => {
   return { meta, data: subscriptions };
 };
 
+const getMySubscriptions = async (userId: string) => {
+  const subscriptionService = new SubscriptionService();
+
+  const subscription = await subscriptionService.getUserCurrentSubscription(
+    userId
+  );
+
+  // Get current ads count
+  const currentAdsCount = await prisma.product.count({
+    where: {
+      userId: userId,
+      status: "ACCEPTED",
+    },
+  });
+
+  return {
+    ...subscription,
+    currentAdsCount,
+  };
+};
+
 const getSingleSubscription = async (id: string) => {
   const result = await prisma.subscription.findUnique({
     where: { id },
@@ -125,8 +147,8 @@ const getSingleSubscription = async (id: string) => {
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Subscription not found..!!");
   }
- 
-  return result
+
+  return result;
 };
 
 const updateSubscription = async (id: string, data: any) => {
@@ -223,6 +245,7 @@ const stripeWebhookHandler = async (event: Stripe.Event) => {
 export const subscriptionService = {
   createSubscription,
   getAllSubscriptions,
+  getMySubscriptions,
   getSingleSubscription,
   updateSubscription,
   deleteSubscription,

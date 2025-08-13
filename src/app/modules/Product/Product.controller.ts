@@ -6,9 +6,19 @@ import { productService } from "./Product.service";
 import config from "../../../config";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/ApiErrors";
+import { SubscriptionService } from "../Subscription/subscription.utils";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
+   const subscriptionService = new SubscriptionService();
+  
+      // Check if user can create more ads
+      const canCreate = await subscriptionService.canUserCreateAd(userId);
+  
+      if (!canCreate.allowed) {
+        throw new ApiError(httpStatus.FORBIDDEN, canCreate.reason);
+      }
+  
   if (req.file) {
     req.body.image = `${config.backend_image_url}/${req.file.filename}`;
   }
@@ -22,6 +32,7 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
   const { categorySlug, ...rest } = req.query;
 
   let categoryId = undefined;
@@ -36,6 +47,27 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     }
     categoryId = category.id;
   }
+
+
+   const subscriptionService = new SubscriptionService();
+   const userSubscription =
+     await subscriptionService.getUserCurrentSubscription(userId);
+
+   let searchQuery: any = {
+     where: {
+       status: "ACCEPTED",
+     },
+   };
+
+   // Enhanced search for premium users
+   if (userSubscription.canAccessPremiumFeatures) {
+     // Add premium search filters, sorting, etc.
+     searchQuery.include = {
+       category: true,
+       // Include additional data for premium users
+     };
+   }
+
 
   const results = await productService.getAllProducts({ ...rest, categoryId });
   sendResponse(res, {

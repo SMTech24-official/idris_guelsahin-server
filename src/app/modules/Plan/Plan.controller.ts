@@ -15,7 +15,8 @@ const createPlan = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllPlans = catchAsync(async (req: Request, res: Response) => {
-    const results = await planService.getAllPlans(req.query);
+    const sort = req.query.sort || 'createdAt';
+    const results = await planService.getAllPlans({...req.query, sort});
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
