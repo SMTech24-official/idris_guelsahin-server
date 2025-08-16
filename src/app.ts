@@ -14,10 +14,10 @@ export const corsOptions = {
   origin: [
     "http://localhost:3000",
     "http://localhost:5173",
+    "http://172.252.13.75:3651/",
     "http://localhost:3001",
     "https://blutournments.vercel.app",
-    "https://react-blu-primely.vercel.app"
-    
+    "https://react-blu-primely.vercel.app",
   ],
 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
