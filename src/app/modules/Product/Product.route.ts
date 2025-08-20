@@ -20,10 +20,10 @@ router.post(
 );
 
 // get all product
-router.get("/", auth(), productController.getAllProducts);
+router.get("/",  productController.getAllProducts);
 
 // get single product by id
-router.get("/:id", auth(), productController.getSingleProduct);
+router.get("/:id", productController.getSingleProduct);
 
 // update product status
 router.patch(

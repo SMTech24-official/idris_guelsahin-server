@@ -20,10 +20,10 @@ router.post(
 );
 
 // get all category
-router.get("/", auth(), categoryController.getAllCategorys);
+router.get("/", categoryController.getAllCategorys);
 
 // get category slug by all products
-router.get("/:slug", auth(), categoryController.getSingleCategory);
+router.get("/:slug",  categoryController.getSingleCategory);
 
 // update category
 router.put(
