@@ -132,17 +132,17 @@ const sendOtp = async (payload: { email: string }) => {
 
 // user login
 const enterOtp = async (payload: { email: string; otp: string }) => {
-  const userData = await prisma.user.findFirst({
+  const userData = await prisma.user.findUnique({
     where: {
-      AND: [
-        {
-          otp: Number(payload.otp),
-        },
-      ],
+      email: payload.email
     },
   });
 
   if (!userData) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if ( userData.otp !== Number(payload.otp)) {
     throw new ApiError(404, "Your otp is incorrect");
   }
 
