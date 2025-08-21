@@ -10,17 +10,19 @@ import { SubscriptionService } from "../Subscription/subscription.utils";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
-   const subscriptionService = new SubscriptionService();
-  
-      // Check if user can create more ads
-      const canCreate = await subscriptionService.canUserCreateAd(userId);
-  
-      if (!canCreate.allowed) {
-        throw new ApiError(httpStatus.FORBIDDEN, canCreate.reason);
-      }
-  
-  if (req.file) {
-    req.body.image = `${config.backend_image_url}/${req.file.filename}`;
+  const subscriptionService = new SubscriptionService();
+
+  // Check if user can create more ads
+  const canCreate = await subscriptionService.canUserCreateAd(userId);
+
+  if (!canCreate.allowed) {
+    throw new ApiError(httpStatus.FORBIDDEN, canCreate.reason);
+  }
+
+  if (req.files) {
+    req.body.images = (req.files as Express.Multer.File[]).map((file) => {
+      return `${config.backend_image_url}/${file.filename}`;
+    });
   }
   const result = await productService.createProduct(req.body, userId);
   sendResponse(res, {
@@ -48,26 +50,25 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     categoryId = category.id;
   }
 
+  const subscriptionService = new SubscriptionService();
+  const userSubscription = await subscriptionService.getUserCurrentSubscription(
+    userId
+  );
 
-   const subscriptionService = new SubscriptionService();
-   const userSubscription =
-     await subscriptionService.getUserCurrentSubscription(userId);
+  let searchQuery: any = {
+    where: {
+      status: "ACCEPTED",
+    },
+  };
 
-   let searchQuery: any = {
-     where: {
-       status: "ACCEPTED",
-     },
-   };
-
-   // Enhanced search for premium users
-   if (userSubscription.canAccessPremiumFeatures) {
-     // Add premium search filters, sorting, etc.
-     searchQuery.include = {
-       category: true,
-       // Include additional data for premium users
-     };
-   }
-
+  // Enhanced search for premium users
+  if (userSubscription.canAccessPremiumFeatures) {
+    // Add premium search filters, sorting, etc.
+    searchQuery.include = {
+      category: true,
+      // Include additional data for premium users
+    };
+  }
 
   const results = await productService.getAllProducts({ ...rest, categoryId });
   sendResponse(res, {
@@ -103,8 +104,14 @@ const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
-  if (req.file) {
-    req.body.image = `${config.backend_image_url}/${req.file.filename}`;
+  if (req.files) {
+    const newImages: string[] = (req.files as Express.Multer.File[]).map(
+      (file) => {
+        return `${config.backend_image_url}/${file.filename}`;
+      }
+    );
+    const keepImages: string[] = req.body.images || [];
+    req.body.images = [...keepImages, ...newImages];
   }
   const result = await productService.updateProduct(req.params.id, req.body);
   sendResponse(res, {

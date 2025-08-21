@@ -13,7 +13,7 @@ const router = Router();
 router.post(
   "/create",
   auth(),
-  fileUploader.upload.single("image"),
+  fileUploader.upload.array("image", 4),
   parseBodyData,
   validateRequest(ProductValidation.ProductSchema),
   productController.createProduct

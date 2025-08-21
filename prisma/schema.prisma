@@ -84,7 +84,7 @@ model Product {
   websiteUrl    String
   facebookUrl   String
   instragramUrl String
-  image         String
+  images         String[]
   status        ProductStatus @default(PENDING)
 
   createdAt DateTime @default(now())
