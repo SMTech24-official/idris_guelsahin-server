@@ -1,4 +1,6 @@
+import httpStatus from "http-status";
 import app from "../../../app";
+import ApiError from "../../../errors/ApiErrors";
 import prisma from "../../../shared/prisma";
 
 
@@ -10,7 +12,7 @@ export class SubscriptionService {
     const subscription = await prisma.subscription.findFirst({
       where: {
         userId,
-        status: "active", // or whatever status indicates active subscription
+        status: "active",
         currentPeriodEnd: {
           gte: new Date(), // Ensure subscription hasn't expired
         },
@@ -18,11 +20,19 @@ export class SubscriptionService {
       include: {
         plan: true,
       },
+      orderBy: {
+        createdAt: "desc", 
+      },
     });
+    console.log(subscription, 's');
 
     // If no active subscription, return free plan features
     if (!subscription) {
       return this.getFreePlanFeatures();
+    }
+    if (!subscription.plan) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND, "Subscription plan not found")
     }
 
     return {
@@ -69,6 +79,8 @@ export class SubscriptionService {
   ): Promise<{ allowed: boolean; reason?: string }> {
     const userSubscription = await this.getUserCurrentSubscription(userId);
 
+
+
     // Count current active ads
     const currentAdsCount = await prisma.product.count({
       where: {
@@ -77,6 +89,9 @@ export class SubscriptionService {
         status: "ACCEPTED", // Only count active/accepted ads
       },
     });
+
+    
+    console.log(currentAdsCount, "curr");
 
     if (userSubscription.maxAds === -1) {
       return { allowed: true }; // Unlimited
