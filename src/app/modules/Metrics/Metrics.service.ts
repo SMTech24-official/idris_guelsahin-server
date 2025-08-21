@@ -172,7 +172,7 @@ const recentSubscriberList = async (date = new Date()) => {
     name: sub.user.fullName,
     email: sub.user.email,
     mobileNumber: sub.user.mobileNumber,
-    plan: `${sub.plan.name} (${sub.plan.price} ${sub.plan.currency}/Monat)`,
+    plan: `${sub?.plan?.name} (${sub.plan?.price} ${sub?.plan?.currency}/Monat)`,
   }));
 };
 
