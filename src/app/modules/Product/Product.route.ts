@@ -13,7 +13,7 @@ const router = Router();
 router.post(
   "/create",
   auth(),
-  fileUploader.upload.array("image", 4),
+  fileUploader.upload.array("images", 4),
   parseBodyData,
   validateRequest(ProductValidation.ProductSchema),
   productController.createProduct
@@ -38,7 +38,7 @@ router.patch(
 router.put(
   "/:id",
   auth(),
-  fileUploader.upload.single("image"),
+  fileUploader.upload.array("images", 4),
   parseBodyData,
   validateRequest(ProductValidation.UpdateProductSchema),
   productController.updateProduct
