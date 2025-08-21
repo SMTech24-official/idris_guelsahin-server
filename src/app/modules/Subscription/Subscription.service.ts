@@ -50,7 +50,9 @@ const createSubscription = async (data: TSubscription) => {
   });
 
   const paymentIntent = (subscription.latest_invoice as any)?.payment_intent;
+
   const clientSecret = paymentIntent?.client_secret;
+  console.log(clientSecret, 'clientSecret');
 
   // 3) Save subscription in DB (status will be incomplete until payment confirmed)
   await prisma.subscription.create({
