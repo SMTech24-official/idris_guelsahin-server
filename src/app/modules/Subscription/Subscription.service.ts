@@ -105,6 +105,7 @@ const getMySubscriptions = async (userId: string) => {
   const subscription = await subscriptionService.getUserCurrentSubscription(
     userId
   );
+  
 
   // Get current ads count
   const currentAdsCount = await prisma.product.count({

@@ -37,7 +37,10 @@ export class SubscriptionService {
 
     return {
       planName: subscription.plan.name,
+      planPrice: subscription.plan.price,
+      duration: subscription.plan.duration,
       features: subscription.plan.features,
+      currentPeriodEnd: subscription.currentPeriodEnd,
       maxAds: this.getMaxAdsForPlan(subscription.plan.name),
       canAccessPremiumFeatures: this.canAccessPremiumFeatures(
         subscription.plan.name
