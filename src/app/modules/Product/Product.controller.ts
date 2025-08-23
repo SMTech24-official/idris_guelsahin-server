@@ -41,6 +41,19 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyProducts = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+
+  const results = await productService.getMyProducts({ userId, ...req.query });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Your Products retrieved successfully",
+    meta: results.meta,
+    data: results.data,
+  });
+});
+
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
   const { categorySlug, ...rest } = req.query;
@@ -78,7 +91,10 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     };
   }
 
-  const results = await productService.getAllProducts({ ...rest, categoryId }, userId);
+  const results = await productService.getAllProducts(
+    { ...rest, categoryId },
+    userId
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -150,6 +166,7 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 export const productController = {
   createProduct,
   getAllProducts,
+  getMyProducts,
   getSingleProduct,
   updateProduct,
   updateProductStatus,

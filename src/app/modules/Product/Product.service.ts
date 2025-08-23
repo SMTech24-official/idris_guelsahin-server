@@ -32,6 +32,29 @@ const createProduct = async (data: TProduct, userId: string) => {
   return result;
 };
 
+const getMyProducts = async (query: Record<string, any>) => {
+  const queryBuilder = new QueryBuilder(prisma.product, query);
+  const products = await queryBuilder
+    .search([""])
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .include({
+      category: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    })
+    .execute();
+
+  const meta = await queryBuilder.countTotal();
+
+  return { meta, data: products };
+};
 const getAllProducts = async (query: Record<string, any>, userId: string) => {
   const queryBuilder = new QueryBuilder(prisma.product, query);
   const products = await queryBuilder
@@ -128,6 +151,7 @@ const deleteProduct = async (id: string) => {
 
 export const productService = {
   createProduct,
+  getMyProducts,
   getAllProducts,
   getSingleProduct,
   updateProduct,

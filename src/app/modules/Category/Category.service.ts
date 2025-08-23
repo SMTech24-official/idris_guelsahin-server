@@ -33,13 +33,26 @@ const getAllCategorys = async (query: Record<string, any>) => {
   return { meta, data: categorys };
 };
 
-const getSingleCategory = async (slug: string) => {
+const getSingleCategory = async (slug: string, userId?: string) => {
   const result = await prisma.category.findUnique({
     where: { slug },
     include: { products: true },
   });
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, "Category not found..!!");
+  }
+
+  if (userId) {
+    const favouriteProducts = await prisma.favorite.findMany({
+      where: { userId },
+      select: { productId: true },
+    });
+    const favouriteProductIds = new Set(
+      favouriteProducts.map((fav) => fav.productId)
+    );
+    result.products.forEach((product: any) => {
+      (product as any).isFavorite = favouriteProductIds.has(product.id);
+    });
   }
   return result;
 };
@@ -49,9 +62,9 @@ const updateCategory = async (id: string, data: any) => {
   if (!existingCategory) {
     throw new ApiError(httpStatus.NOT_FOUND, "Category not found..!!");
   }
-    if (existingCategory.name !== data.name) {
-      data.slug = await generateUniqueSlug(data.name, prisma, "category");
-    }
+  if (existingCategory.name !== data.name) {
+    data.slug = await generateUniqueSlug(data.name, prisma, "category");
+  }
   const result = await prisma.category.update({ where: { id }, data });
   return result;
 };

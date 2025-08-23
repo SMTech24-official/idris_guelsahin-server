@@ -20,8 +20,11 @@ router.post(
   productController.createProduct
 );
 
-// get all product
-router.get("/", auth(), productController.getAllProducts);
+// get my product
+router.get("/my-products", auth(UserRole.SELLER), productController.getMyProducts);
+
+// get all produc
+router.get("/",  productController.getAllProducts);
 
 // get single product by id
 router.get("/:id", productController.getSingleProduct);

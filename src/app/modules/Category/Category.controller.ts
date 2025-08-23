@@ -3,8 +3,11 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { categoryService } from "./Category.service";
-import config from "../../../config";
 import { imageService } from "../Image/Image.service";
+import { jwtHelpers } from "../../../helpars/jwtHelpers";
+import config from "../../../config";
+import prisma from "../../../shared/prisma";
+import { Secret } from "jsonwebtoken";
 
 const createCategory = catchAsync(async (req: Request, res: Response) => {
   if (req.file) {
@@ -33,7 +36,25 @@ const getAllCategorys = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
-  const result = await categoryService.getSingleCategory(req.params.slug);
+  const token = req.headers.authorization;
+  let userId;
+  if (token) {
+    const verifiedUser = jwtHelpers.verifyToken(
+      token,
+      config.jwt.jwt_secret as Secret
+    );
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: verifiedUser.email,
+      },
+    });
+    userId = user?.id;
+  }
+  const result = await categoryService.getSingleCategory(
+    req.params.slug,
+    userId
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -43,9 +64,9 @@ const getSingleCategory = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateCategory = catchAsync(async (req: Request, res: Response) => {
-    if (req.file) {
-       const url = await imageService.createImage(req.file);
-       req.body.image = url.imageUrl;
+  if (req.file) {
+    const url = await imageService.createImage(req.file);
+    req.body.image = url.imageUrl;
     // req.body.image = `${config.backend_image_url}/${req.file.filename}`;
   }
   const result = await categoryService.updateCategory(req.params.id, req.body);
