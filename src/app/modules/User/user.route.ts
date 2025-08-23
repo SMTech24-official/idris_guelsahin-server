@@ -6,6 +6,7 @@ import { UserController } from "./user.controller";
 import { UserValidation } from "./user.validation";
 import validateRequest from "../../middlewares/validateRequest";
 import { parseBodyData } from "../../middlewares/parseBodyData";
+import fileUploaderCloud from "../../../helpars/fileUploaderCloud";
 
 const router = express.Router();
 
@@ -42,7 +43,10 @@ router.get("/:id", auth(), UserController.getUserById);
 router.put(
   "/update-me",
   auth(),
-  fileUploader.uploadMultiple,
+  fileUploaderCloud.upload.fields([
+    { name: "profileImage", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 },
+  ]),
   parseBodyData,
   validateRequest(UserValidation.userUpdateSchema),
   UserController.updateUser

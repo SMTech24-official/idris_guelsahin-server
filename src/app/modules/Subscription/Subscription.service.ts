@@ -46,7 +46,7 @@ const createSubscription = async (data: TSubscription) => {
     items: [{ price: plan.stripePriceId }],
     payment_behavior: "default_incomplete",
     expand: ["latest_invoice.payment_intent"],
-    metadata: { userId: user.id, planId: plan.id },
+    metadata: { userId: user.id, planId: plan.id }
   });
 
   const paymentIntent = (subscription.latest_invoice as any)?.payment_intent;

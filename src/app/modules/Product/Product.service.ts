@@ -32,7 +32,7 @@ const createProduct = async (data: TProduct, userId: string) => {
   return result;
 };
 
-const getAllProducts = async (query: Record<string, any>) => {
+const getAllProducts = async (query: Record<string, any>, userId: string) => {
   const queryBuilder = new QueryBuilder(prisma.product, query);
   const products = await queryBuilder
     .search([""])
@@ -52,6 +52,20 @@ const getAllProducts = async (query: Record<string, any>) => {
     .execute();
 
   const meta = await queryBuilder.countTotal();
+
+  if (userId) {
+    const favouriteProducts = await prisma.favorite.findMany({
+      where: { userId },
+      select: { productId: true },
+    });
+    const favouriteProductIds = new Set(
+      favouriteProducts.map((fav) => fav.productId)
+    );
+    products.forEach((product: any) => {
+      (product as any).isFavorite = favouriteProductIds.has(product.id);
+    }
+    );
+  }
   return { meta, data: products };
 };
 

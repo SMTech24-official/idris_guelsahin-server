@@ -6,6 +6,7 @@ import { ProductValidation } from "./Product.validation";
 import { parseBodyData } from "../../middlewares/parseBodyData";
 import { fileUploader } from "../../../helpars/fileUploader";
 import { UserRole } from "@prisma/client";
+import fileUploaderCloud from "../../../helpars/fileUploaderCloud";
 
 const router = Router();
 
@@ -13,14 +14,14 @@ const router = Router();
 router.post(
   "/create",
   auth(),
-  fileUploader.upload.array("images", 4),
+  fileUploaderCloud.upload.array("images", 4),
   parseBodyData,
   validateRequest(ProductValidation.ProductSchema),
   productController.createProduct
 );
 
 // get all product
-router.get("/",  productController.getAllProducts);
+router.get("/", auth(), productController.getAllProducts);
 
 // get single product by id
 router.get("/:id", productController.getSingleProduct);
@@ -38,7 +39,7 @@ router.patch(
 router.put(
   "/:id",
   auth(),
-  fileUploader.upload.array("images", 4),
+  fileUploaderCloud.upload.array("images", 4),
   parseBodyData,
   validateRequest(ProductValidation.UpdateProductSchema),
   productController.updateProduct

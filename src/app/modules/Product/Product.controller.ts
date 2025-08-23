@@ -7,6 +7,7 @@ import config from "../../../config";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/ApiErrors";
 import { SubscriptionService } from "../Subscription/subscription.utils";
+import { imageService } from "../Image/Image.service";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
@@ -20,9 +21,16 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (req.files) {
-    req.body.images = (req.files as Express.Multer.File[]).map((file) => {
-      return `${config.backend_image_url}/${file.filename}`;
-    });
+    //s3
+    const urls = await imageService.createMultipleImages(
+      req.files as Express.Multer.File[]
+    );
+    req.body.images = urls.imageUrls;
+
+    //local
+    // req.body.images = (req.files as Express.Multer.File[]).map((file) => {
+    //   return `${config.backend_image_url}/${file.filename}`;
+    // });
   }
   const result = await productService.createProduct(req.body, userId);
   sendResponse(res, {
@@ -70,7 +78,7 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     };
   }
 
-  const results = await productService.getAllProducts({ ...rest, categoryId });
+  const results = await productService.getAllProducts({ ...rest, categoryId }, userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -105,11 +113,18 @@ const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
 
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   if (req.files) {
-    const newImages: string[] = (req.files as Express.Multer.File[]).map(
-      (file) => {
-        return `${config.backend_image_url}/${file.filename}`;
-      }
+    //s3
+    const urls = await imageService.createMultipleImages(
+      req.files as Express.Multer.File[]
     );
+    const newImages: string[] = urls.imageUrls;
+
+    //local
+    // const newImages: string[] = (req.files as Express.Multer.File[]).map(
+    //   (file) => {
+    //     return `${config.backend_image_url}/${file.filename}`;
+    //   }
+    // );
     const keepImages: string[] = req.body.images || [];
     req.body.images = [...keepImages, ...newImages];
   }

@@ -5,6 +5,7 @@ import { UserService } from "./user.service";
 import sendResponse from "../../../shared/sendResponse";
 import { User } from "@prisma/client";
 import config from "../../../config";
+import { imageService } from "../Image/Image.service";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.createUser(req.body);
@@ -82,14 +83,21 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   if (req.files) {
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
+    //s3
     if (files.profileImage && files.profileImage[0]) {
-      updateData.profileImage = `${config.backend_image_url}/${
-        files.profileImage[0].filename
-      }`;
+
+      const url =  await imageService.createImage(files.profileImage[0]);
+      updateData.profileImage =  url.imageUrl
+      // updateData.profileImage = `${config.backend_image_url}/${
+      //   files.profileImage[0].filename
+      // }`;
     }
 
     if (files.coverImage && files.coverImage[0]) {
-      updateData.coverImage = `${config.backend_image_url}/${files.coverImage[0].filename}`;
+            const url = await imageService.createImage(files.coverImage[0]);
+      updateData.profileImage = url.imageUrl;
+      
+      // updateData.coverImage = `${config.backend_image_url}/${files.coverImage[0].filename}`;
     }
   }
 
