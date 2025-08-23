@@ -8,6 +8,7 @@ import { planRoutes } from "../modules/Plan/Plan.route";
 import { subscriptionRoutes } from "../modules/Subscription/Subscription.route";
 import { metricsRoutes } from "../modules/Metrics/Metrics.route";
 import { favoriteRoutes } from "../modules/Favorite/Favorite.route";
+import { contactRoutes } from "../modules/Contact/Contact.route";
 
 
 const router = express.Router();
@@ -41,6 +42,10 @@ const moduleRoutes = [
   {
     path: "/favorite",
     route: favoriteRoutes,
+  },
+  {
+    path: "/contact",
+    route: contactRoutes,
   },
   {
     path: "/metrics",
