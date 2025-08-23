@@ -71,6 +71,13 @@ const getAllProducts = async (query: Record<string, any>, userId: string) => {
           slug: true,
         },
       },
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          profileImage: true,
+        },
+      }
     })
     .execute();
 
@@ -101,6 +108,13 @@ const getSingleProduct = async (id: string) => {
           id: true,
           name: true,
           slug: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          profileImage: true,
         },
       },
     },
